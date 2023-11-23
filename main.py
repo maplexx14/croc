@@ -1,3 +1,4 @@
+# Импорт библиотек
 import random
 import time
 import telebot
@@ -9,31 +10,38 @@ from db import plus_ans
 from db import delete_dup
 from db import check_user
 
+# Подключение к тг
 bot = telebot.TeleBot('6445605546:AAEM3gJcNS5b5AUsGVDEr00JpyfpBAF32VE')
 
+# Файл с id пользователей
 joinedFile = open('id.txt', 'r')
 joinedUsers = set()
 for line in joinedFile:
     joinedUsers.add(line.strip())
 joinedFile.close()
 
+# Файл с проголосовавшими пользователями
 joinedFile1 = open('voted_users.txt', 'r')
 joinedUsers1 = set()
 for line in joinedFile1:
     joinedUsers1.add(line.strip())
 joinedFile1.close()
+# Рандомное число для рандомного слова
 randNum = random.randint(1, 2600)
+# Открытие файлов со словами
 file = open('words.txt').readlines()
 file1 = open('words_upper.txt').readlines()
 arr_upper = [str(i) for i in file1]
 arr = [str(i) for i in file]
 
+# Переменные для фикса багов
 count_play = 0
 count_own = 0
 own = None
 word = None
 guess_pem = None
 total = 0
+# Отображение статистики
 @bot.message_handler(commands=['stat'])
 def get_stat(message):
     count = 1
@@ -46,7 +54,7 @@ def get_stat(message):
             count += 1
     except Exception as e:
         print(e)
-
+# Начало голосования для остановки игры
 @bot.message_handler(commands=['stop'])
 def stop_game(message):
     global total
@@ -57,6 +65,7 @@ def stop_game(message):
     with open('voted_users.txt', 'w') as f:
         f.write('')
     return total
+# Загадывание собственного слова
 @bot.message_handler(commands=['own'])
 def own_word(message):
     global guess_pem, count_own, word, current_player
@@ -74,7 +83,7 @@ def own_word(message):
         count_own += 1
         return word, count_own, current_player
 
-
+# Начало работы 
 @bot.message_handler(commands=['start'])
 def start(message):
     global count_play, count_own,  count ,chat_id, word
@@ -96,7 +105,7 @@ def start(message):
     print(message.chat.id)
     return count_play, count_own, count, chat_id, word
 
-
+# Начало обычной игры
 @bot.message_handler(commands=['play'])
 
 def guess(message):
@@ -121,8 +130,8 @@ def guess(message):
 
     else:
         bot.send_message(message.chat.id, 'Невозможно начать игру')
-
-
+        
+# Проверка слова на правильность
 @bot.message_handler(content_types=['text'])
 def check(message):
     global current_player, own, guess_pem, word, count_play, count, count_own, total
@@ -183,7 +192,7 @@ def check_word(message):
         bot.register_next_step_handler(word, check)
     return own
 
-
+# Ответы на нажатие Inline кнопок
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call: types.CallbackQuery):
     global current_player, randNum, i, own, count_play, word, count, count_own
@@ -272,7 +281,7 @@ def callback_worker(call: types.CallbackQuery):
 print('Бот запущен')
 
 
-
+# Зацикливание бота
 while True:
     try:
         bot.polling(none_stop=True)
