@@ -11,7 +11,7 @@ from db import delete_dup
 from db import check_user
 
 # Подключение к тг
-bot = telebot.TeleBot('6445605546:AAEM3gJcNS5b5AUsGVDEr00JpyfpBAF32VE')
+bot = telebot.TeleBot('token')
 
 # Файл с id пользователей
 joinedFile = open('id.txt', 'r')
